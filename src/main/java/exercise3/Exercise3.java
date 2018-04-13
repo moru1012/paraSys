@@ -53,7 +53,11 @@ public class Exercise3 {
         while (i <= NUMBER_OF_COSTUMERS) {
             // New Costumer gets generated
             Costumer newCostumer = new Costumer(i);
-            DepositRun depositRun = new DepositRun(this.supermarket, newCostumer);
+            Runnable depositRun = () -> { // costumer goes in
+                this.supermarket.enter(newCostumer);
+                // costumer leaves
+                this.supermarket.leave(newCostumer);
+            };
             executorService.submit(depositRun);
             // Wait for next Ccstumer
             try {
