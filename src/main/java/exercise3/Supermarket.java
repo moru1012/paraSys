@@ -1,18 +1,14 @@
-package exercise2;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package exercise3;
 
 import java.time.Duration;
 import java.util.Random;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.Semaphore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Supermarket {
 
-    private final Lock lock = new ReentrantLock();
-    private final Condition notAvailable = lock.newCondition();
+    private Semaphore semaphore;
 
     private static Logger LOG = LoggerFactory.getLogger(Supermarket.class);
 
@@ -25,31 +21,19 @@ public class Supermarket {
 
     public Supermarket(int machines) {
         this.machines = machines;
+        this.semaphore = new Semaphore(this.machines, true);
         generator = new Random();
     }
 
     public void enter(Costumer costumer) {
         // Check condition
         LOG.debug("Costumer " + costumer.getId() + " entered.");
-        lock.lock();
         try {
-            while (machines == 0) {
-                try {
-                    LOG.debug("Costumer " + costumer.getId() + " waits.");
-                    notAvailable.await();
-                    LOG.debug("Costumer " + costumer.getId() + " resumes.");
-                } catch (InterruptedException ie) {
-                    LOG.error("InterruptedException", ie);
-                }
-            }
-            // Take resource
-            machines--;
-            // just to be sure
-            assert machines >= 0;
-        } finally {
-            lock.unlock();
+            this.semaphore.acquire();
+            LOG.debug("Costumer " + costumer.getId() + " aquired machine.");
+        } catch (InterruptedException ie) {
+            LOG.error("InterruptedException", ie);
         }
-        LOG.debug("Costumer " + costumer.getId() + " takes machine.");
         // costumer does his stuff
         LOG.debug("Costumer " + costumer.getId() + " uses machine.");
         for (int i = 1; i <= costumer.getNumberOfBaskets(); i++) {
@@ -64,17 +48,9 @@ public class Supermarket {
     }
 
     public void leave(Costumer costumer) {
-        lock.lock();
-        try {
-            // free resource
-            LOG.debug("Costumer " + costumer.getId() + " releases machine.");
-            machines++;
-            // wake others up
-            LOG.debug("Costumer " + costumer.getId() + " finished.");
-            notAvailable.signal();
-        } finally {
-            lock.unlock();
-        }
+        LOG.debug("Costumer " + costumer.getId() + " releases machine.");
+        semaphore.release();
+        LOG.debug("Costumer " + costumer.getId() + " finished.");
     }
 
     private static int getRandomNumberInRange(int min, int max) {

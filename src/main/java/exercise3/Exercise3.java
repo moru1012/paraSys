@@ -1,4 +1,4 @@
-package exercise2;
+package exercise3;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,9 +7,9 @@ import java.time.Duration;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class Exercise2 {
+public class Exercise3 {
 
-    private static Logger LOG = LoggerFactory.getLogger(Exercise2.class);
+    private static Logger LOG = LoggerFactory.getLogger(Exercise3.class);
 
     private static ExecutorService executorService;
 
@@ -19,7 +19,7 @@ public class Exercise2 {
 
     private final Supermarket supermarket;
 
-    public Exercise2(int executor_Type) {
+    public Exercise3(int executor_Type) {
         switch (executor_Type) {
             case 0:
                 executorService = Executors.newCachedThreadPool();

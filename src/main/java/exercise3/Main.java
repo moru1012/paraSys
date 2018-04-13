@@ -1,4 +1,4 @@
-package exercise2;
+package exercise3;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,7 +9,7 @@ public class Main {
 
     public static void main(String[] args) {
         int type = 0;
-        LOG.debug("Starting Exercise 2." + (type+1));
-        new Exercise2(type);
+        LOG.debug("Starting Exercise 3." + (type+1));
+        new Exercise3(type);
     }
 }
